@@ -16,6 +16,8 @@ services:
 
   app:
     build: ./docker/app
+    ports:
+      - 3000:3000
     volumes:
       - .:/var/www
     depends_on:
