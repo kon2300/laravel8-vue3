@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,3 +28,13 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
+
+Route::resource('/articles', ArticleController::class)
+                ->names(['index'=>'article.index',
+                        'create' => 'article.create',
+                        'show' => 'article.show',
+                        'edit' => 'article.edit',
+                        'update' => 'article.update',
+                        'destroy' => 'article.destroy',
+                        'store'=>'article.store'])
+                ->middleware(['auth']);
