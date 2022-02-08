@@ -14,9 +14,9 @@ class CreateCommentLikesTable extends Migration
     public function up()
     {
         Schema::create('comment_likes', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
-            $table->unsignedBigInteger('comment_id')->constrained('comments')->onUpdate('cascade')->onDelete('cascade');
-            $table->unsignedBigInteger('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->id();
+            $table->foreignId('comment_id')->constrained('comments')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

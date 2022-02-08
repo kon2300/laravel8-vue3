@@ -14,8 +14,8 @@ class CreateArticlesTable extends Migration
     public function up()
     {
         Schema::create('articles', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
-            $table->unsignedBigInteger('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('title');
             $table->text('content');
             $table->timestamps();

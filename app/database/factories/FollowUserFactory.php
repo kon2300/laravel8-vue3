@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ArticleFactory extends Factory
+class FollowUserFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,8 +16,7 @@ class ArticleFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'title' => $this->faker->title(),
-            'content' => $this->faker->realText(),
+            'following_user_id' => User::factory(),
         ];
     }
 }
