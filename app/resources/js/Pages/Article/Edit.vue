@@ -1,12 +1,17 @@
 <template>
     <app-layout title="Article - Edit">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Article - Edit
-            </h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Article - Edit
+                </h2>
+                <jet-nav-link :href="route('article.show', [articles.id])">
+                    <jet-button> 戻る </jet-button>
+                </jet-nav-link>
+            </div>
         </template>
 
-        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8 relative">
+        <div class="mx-auto py-10 sm:px-6 lg:px-8">
             <jet-form-section
                 @submitted="form.put(route('article.update', [articles.id]))"
             >
@@ -40,27 +45,46 @@
                 </template>
 
                 <template #actions>
-                    <jet-button class="bg-blue-700"> 完了 </jet-button>
+                    <jet-button class="bg-blue-600 hover:bg-blue-700">
+                        完了
+                    </jet-button>
                 </template>
             </jet-form-section>
-            <jet-button
-                @click="deleteArticle(articles.id)"
-                class="bg-red-500 absolute right-0"
-            >
-                削除
-            </jet-button>
+
+            <jet-section-border />
+
+            <jet-action-section>
+                <template #title>記事の削除</template>
+                <template #description>記事の削除を行います</template>
+
+                <template #content>
+                    <jet-button
+                        @click="deleteArticle(articles.id)"
+                        class="bg-red-500 hover:bg-red-700"
+                        >削除する
+                        <icon-base class="w-5 h-5" icon-name="garbage"
+                            ><icon-garbage />
+                        </icon-base>
+                    </jet-button>
+                </template>
+            </jet-action-section>
         </div>
     </app-layout>
 </template>
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import IconBase from "@/svg/IconBase.vue";
+import IconGarbage from "@/svg/icons/IconGarbage.vue";
+import JetActionSection from "@/Jetstream/ActionSection.vue";
+import JetButton from "@/Jetstream/Button.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetLabel from "@/Jetstream/Label.vue";
+import JetNavLink from "@/Jetstream/NavLink.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import JetInputError from "@/Jetstream/InputError.vue";
+import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetTextarea from "@/Jetstream/Textarea.vue";
-import JetButton from "@/Jetstream/Button.vue";
 import { useForm } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
