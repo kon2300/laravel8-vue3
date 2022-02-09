@@ -15,7 +15,8 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Article/Index', ['articles' => Article::all()]);
+        $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
+        return Inertia::render('Article/Index', ['articles' => $articles]);
     }
 
     /**
@@ -53,8 +54,9 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Article $article)
+    public function show($id)
     {
+        $article = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
         return Inertia::render('Article/Show', ['articles' => $article]);
     }
 
@@ -98,6 +100,7 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         $article->delete();
-        return Inertia::render('Article/Index', ['articles' => Article::all()]);
+        $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
+        return Inertia::render('Article/Index', ['articles' => $articles]);
     }
 }
