@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,3 +39,12 @@ Route::resource('/articles', ArticleController::class)
                         'destroy' => 'article.destroy',
                         'store'=>'article.store'])
                 ->middleware(['auth']);
+
+Route::resource('/comments', CommentController::class)
+                ->names(['show' => 'comment.show',
+                'edit' => 'comment.edit',
+                'update' => 'comment.update',
+                'destroy' => 'comment.destroy',
+                'store'=>'comment.store'])
+        ->middleware(['auth']);
+

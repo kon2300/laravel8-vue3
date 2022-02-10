@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class ArticleController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,8 +17,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
-        return Inertia::render('Article/Index', ['articles' => $articles]);
+        //
     }
 
     /**
@@ -27,7 +27,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Article/Create');
+        //
     }
 
     /**
@@ -39,14 +39,16 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => ['required'],
             'content' => ['required']
         ]);
 
         $input = $request->all();
         $input['user_id'] = Auth::id();
-        Article::create($input);
-        return redirect('articles');
+        Comment::create($input);
+
+        $id = $input['article_id'];
+        $article = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
+        return Inertia::render('Article/show', ['articles' => $article]);
     }
 
     /**
@@ -57,8 +59,7 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        $article = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
-        return Inertia::render('Article/Show', ['articles' => $article]);
+        //
     }
 
     /**
@@ -67,9 +68,9 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Article $article)
+    public function edit($id)
     {
-        return Inertia::render('Article/Edit', ['articles' => $article]);
+        //
     }
 
     /**
@@ -79,17 +80,9 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'title' => ['required'],
-            'content' => ['required']
-        ]);
-
-        $input = $request->all();
-
-        $article->update($input);
-        return Inertia::render('Article/Show', ['articles' => $article]);
+        //
     }
 
     /**
@@ -98,10 +91,12 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article)
+    public function destroy(Comment $comment)
     {
-        $article->delete();
-        $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
-        return Inertia::render('Article/Index', ['articles' => $articles]);
+        $comment->delete();
+
+        $id = $comment->article_id;
+        $article = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
+        return Inertia::render('Article/Show', ['articles' => $article]);
     }
 }

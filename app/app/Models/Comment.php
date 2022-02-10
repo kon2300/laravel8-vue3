@@ -9,6 +9,12 @@ class Comment extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'article_id',
+        'content'
+    ];
+
     /**
      * Get all of the commentLikes for the Comment
      *
