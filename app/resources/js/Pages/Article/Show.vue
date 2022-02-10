@@ -80,7 +80,7 @@
         <jet-section-border />
 
         <div class="max-w-7xl mx-auto py-5 sm:px-6 lg:px-8">
-            <jet-form-section @submitted="form.post(route(''))">
+            <jet-form-section @submitted="form.post(route('comment.store'))">
                 <template #title>コメントの作成</template>
                 <template #description>コメントの投稿を行います</template>
 
@@ -110,7 +110,11 @@
         <div class="text-2xl text-center">Article - Comments</div>
 
         <section class="mx-1">
-            <div class="container mx-auto relative">
+            <div
+                v-for="comment in articles.comments"
+                :key="comment.id"
+                class="container mx-auto relative my-8"
+            >
                 <div
                     class="flex flex-col bg-white border-2 border-red-200 rounded-3xl"
                 >
@@ -118,7 +122,7 @@
 
                     <div>
                         <p class="px-3">
-                            {{ articles.content }}
+                            {{ comment.content }}
                         </p>
                     </div>
 
@@ -130,27 +134,17 @@
                             <p
                                 class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-10"
                             >
-                                {{ Object.keys(articles.favorites).length }}
+                                {{ Object.keys(comment.comment_likes).length }}
                             </p>
 
-                            <icon-base
-                                class="w-8 h-8 pt-2"
-                                icon-name="speechBabble"
-                                ><icon-speech-babble
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-8"
+                            <button
+                                class="pt-2 pl-1"
+                                @click="deleteComment(comment.id)"
                             >
-                                {{ Object.keys(articles.comments).length }}
-                            </p>
-
-                            <Link :href="route('article.edit', [articles.id])">
-                                <icon-base
-                                    class="w-8 h-8 pt-2"
-                                    icon-name="garbage"
-                                    ><icon-garbage
-                                /></icon-base>
-                            </Link>
+                                <icon-base class="w-6 h-6" icon-name="garbage"
+                                    ><icon-garbage />
+                                </icon-base>
+                            </button>
                         </div>
 
                         <div class="flex px-3 sm:justify-end">
@@ -158,7 +152,7 @@
                                 ><icon-post />
                             </icon-base>
                             <p class="text-gray-400">
-                                {{ articles.updated_at }}
+                                {{ comment.updated_at }}
                             </p>
                         </div>
                     </div>
@@ -192,6 +186,13 @@ const props = defineProps({
 });
 
 const form = useForm({
+    article_id: props.articles.id,
     content: "",
 });
+
+const deleteComment = (id) => {
+    if (window.confirm("削除してもよろしいですか？")) {
+        form.delete(route("comment.destroy", id));
+    }
+};
 </script>
