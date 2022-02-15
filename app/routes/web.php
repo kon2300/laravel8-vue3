@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\CommentLikeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,21 +32,16 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::resource('/articles', ArticleController::class)
-                ->names(['index'=>'article.index',
-                        'create' => 'article.create',
-                        'show' => 'article.show',
-                        'edit' => 'article.edit',
-                        'update' => 'article.update',
-                        'destroy' => 'article.destroy',
-                        'store'=>'article.store'])
-                ->middleware(['auth']);
+Route::group(['middleware' => ['auth']], function () {
+    Route::resource('/articles', ArticleController::class);
 
-Route::resource('/comments', CommentController::class)
-                ->names(['show' => 'comment.show',
-                'edit' => 'comment.edit',
-                'update' => 'comment.update',
-                'destroy' => 'comment.destroy',
-                'store'=>'comment.store'])
-        ->middleware(['auth']);
+    Route::resource('articles.favorites', FavoriteController::class)
+        ->only('destroy', 'store');
+
+    Route::resource('articles.comments', CommentController::class)
+        ->only('destroy', 'store');
+
+    Route::resource('articles.likes', CommentLikeController::class)
+        ->only('destroy', 'store');
+});
 

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
+use App\Models\CommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CommentController extends Controller
+class CommentLikeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,16 +14,6 @@ class CommentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -37,14 +27,10 @@ class CommentController extends Controller
      */
     public function store($article, Request $request)
     {
-        $request->validate([
-            'content' => ['required']
-        ]);
-
         $input = $request->all();
         $input['user_id'] = Auth::id();
-        $input['article_id'] = $article;
-        Comment::create($input);
+        $input['comment_id'] = $article;
+        CommentLike::create($input);
 
         return back();
     }
@@ -56,17 +42,6 @@ class CommentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }
@@ -86,12 +61,12 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $article
+     * @param  int  $artilcle
      * @return \Illuminate\Http\Response
      */
-    public function destroy($article, Comment $comment)
+    public function destroy($artilcle, CommentLike $like)
     {
-        $comment->delete();
+        $like->delete();
 
         return back();
     }
