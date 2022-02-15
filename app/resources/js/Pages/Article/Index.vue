@@ -5,9 +5,9 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Article - List
                 </h2>
-                <jet-nav-link :href="route('article.create')">
+                <Link :href="route('articles.create')">
                     <jet-button> 新規投稿 </jet-button>
-                </jet-nav-link>
+                </Link>
             </div>
         </template>
 
@@ -18,63 +18,85 @@
                 class="container mx-auto relative my-16 lg:w-2/3"
             >
                 <div
-                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl shadow-xl"
+                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl shadow-xl px-3 pb-1"
                 >
-                    <div class="bg-yellow-100 rounded-t-3xl">
-                        <h1
+                    <div class="relative">
+                        <p
                             class="title-font sm:text-2xl text-xl font-medium text-center"
                         >
                             {{ article.title }}
-                        </h1>
+                        </p>
                     </div>
 
                     <div>
-                        <p class="px-3">
+                        <Link
+                            class="absolute -top-8 right-0"
+                            :href="route('articles.show', [article.id])"
+                        >
+                            <p class="bg-green-400 rounded-2xl p-1 font-bold">
+                                詳細
+                            </p>
+                            <icon-hand-cursor class="h-5 w-6 mx-auto" />
+                        </Link>
+                    </div>
+
+                    <div class="sm:flex justify-between">
+                        <div class="flex items-center">
+                            <icon-user class="h-5 w-6" />
+                            <p>
+                                {{ article.user.name }}
+                            </p>
+                        </div>
+                        <div class="flex">
+                            <icon-post class="h-5 w-6 my-auto" />
+                            <p class="text-gray-400">
+                                {{ article.updated_at }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
                             {{ article.content }}
                         </p>
                     </div>
 
                     <div class="flex" v-for="tag in article.tags" :key="tag.id">
-                        <p class="px-3 text-blue-400"># {{ tag.category }}</p>
+                        <p class="text-blue-400"># {{ tag.category }}</p>
                     </div>
 
-                    <div class="justify-between px-3 sm:flex">
-                        <div class="flex justify-end sm:justify-items-start">
-                            <icon-base class="w-8 h-8 pt-2" icon-name="favorite"
-                                ><icon-favorite
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-10"
-                            >
-                                {{ Object.keys(article.favorites).length }}
-                            </p>
-
-                            <icon-base
-                                class="w-8 h-8 pt-2"
-                                icon-name="speechBabble"
-                                ><icon-speech-babble
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-8"
-                            >
-                                {{ Object.keys(article.comments).length }}
-                            </p>
-
-                            <Link :href="route('article.show', [article.id])">
-                                <icon-base
-                                    class="w-8 h-8 pt-2"
-                                    icon-name="handCursor"
-                                    ><icon-hand-cursor
-                                /></icon-base>
-                            </Link>
+                    <div class="flex justify-between">
+                        <div v-if="checkFavorite(article.favorites)">
+                            <div class="flex">
+                                <icon-favorite class="h-5 w-6" />
+                                <p
+                                    class="text-sm bg-orange-200 rounded-lg my-auto px-2"
+                                >
+                                    お気に入り済
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="flex px-3 sm:justify-end">
-                            <icon-base class="w-6 h-6 pt-1" icon-name="post"
-                                ><icon-post />
-                            </icon-base>
-                            <p class="text-gray-400">
-                                {{ article.updated_at }}
+                        <div v-else>
+                            <div class="flex">
+                                <icon-favorite class="h-5 w-6" />
+                                <p
+                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
+                                >
+                                    お気に入り
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex">
+                            <icon-speech-babble class="h-5 w-6" />
+                            <p
+                                class="text-sm bg-blue-200 rounded-lg my-auto px-2"
+                            >
+                                コメント
+                                {{ Object.keys(article.comments).length }}
                             </p>
                         </div>
                     </div>
@@ -86,16 +108,22 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import JetNavLink from "@/Jetstream/NavLink.vue";
 import JetButton from "@/Jetstream/Button.vue";
-import IconBase from "@/svg/IconBase.vue";
 import IconFavorite from "@/svg/icons/IconFavorite.vue";
-import IconSpeechBabble from "@/svg/icons/IconSpeechBabble.vue";
+import IconHandCursor from "@/svg/icons/IconHandCursor.vue";
 import IconPost from "@/svg/icons/IconPost.vue";
-import IconHandCursor from "../../svg/icons/IconHandCursor.vue";
+import IconSpeechBabble from "@/svg/icons/IconSpeechBabble.vue";
+import IconUser from "@/svg/icons/IconUser.vue";
 import { Link } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
     articles: {},
+    user: Number,
 });
+
+const checkFavorite = (favorites) => {
+    return favorites.some((favorite) => {
+        return props.user === favorite.user_id;
+    });
+};
 </script>

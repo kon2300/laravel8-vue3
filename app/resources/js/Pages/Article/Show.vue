@@ -6,70 +6,125 @@
             </h2>
         </template>
 
-        <section class="my-8 mx-1">
-            <div class="container mx-auto relative">
+        <section class="my-5">
+            <div class="container mx-auto relative my-16 lg:w-2/3">
                 <div
-                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl"
+                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl shadow-xl px-3 pb-1"
                 >
-                    <div class="bg-yellow-100 rounded-t-3xl">
-                        <h1
+                    <div class="relative">
+                        <p
                             class="title-font sm:text-2xl text-xl font-medium text-center"
                         >
-                            {{ articles.title }}
-                        </h1>
-                    </div>
-
-                    <div>
-                        <p class="px-3">
-                            {{ articles.content }}
+                            {{ article.title }}
                         </p>
                     </div>
 
-                    <div
-                        class="flex"
-                        v-for="tag in articles.tags"
-                        :key="tag.id"
-                    >
-                        <p class="px-3 text-blue-400"># {{ tag.category }}</p>
+                    <div v-if="article.user_id === user">
+                        <Link
+                            class="absolute -top-8 right-0"
+                            :href="route('articles.edit', [article.id])"
+                        >
+                            <p class="bg-green-400 rounded-2xl p-1 font-bold">
+                                編集
+                            </p>
+                            <icon-hand-cursor class="h-5 w-6 mx-auto" />
+                        </Link>
                     </div>
 
-                    <div class="justify-between px-3 sm:flex">
-                        <div class="flex justify-end sm:justify-items-start">
-                            <icon-base class="w-8 h-8 pt-2" icon-name="favorite"
-                                ><icon-favorite
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-10"
-                            >
-                                {{ Object.keys(articles.favorites).length }}
+                    <div class="sm:flex justify-between">
+                        <div class="flex items-center">
+                            <icon-user class="h-5 w-6" />
+                            <p>
+                                {{ article.user.name }}
                             </p>
-
-                            <icon-base
-                                class="w-8 h-8 pt-2"
-                                icon-name="speechBabble"
-                                ><icon-speech-babble
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-8"
-                            >
-                                {{ Object.keys(articles.comments).length }}
+                        </div>
+                        <div class="flex">
+                            <icon-post class="h-5 w-6 my-auto" />
+                            <p class="text-gray-400">
+                                {{ article.updated_at }}
                             </p>
+                        </div>
+                    </div>
 
-                            <Link :href="route('article.edit', [articles.id])">
-                                <icon-base
-                                    class="w-8 h-8 pt-2"
-                                    icon-name="information"
-                                    ><icon-information
-                                /></icon-base>
-                            </Link>
+                    <div>
+                        <p>
+                            {{ article.content }}
+                        </p>
+                    </div>
+
+                    <div class="flex" v-for="tag in article.tags" :key="tag.id">
+                        <p class="text-blue-400"># {{ tag.category }}</p>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <div v-if="article.user_id === user">
+                            <div class="flex">
+                                <Link as="button" disabled>
+                                    <icon-favorite class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-orange-200 rounded-lg my-auto px-2"
+                                >
+                                    自分の投稿
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="flex px-3 sm:justify-end">
-                            <icon-base class="w-6 h-6 pt-1" icon-name="post"
-                                ><icon-post />
-                            </icon-base>
-                            <p class="text-gray-400">
-                                {{ articles.updated_at }}
+                        <div v-else-if="checkFavorite(article.favorites)">
+                            <div class="flex">
+                                <Link
+                                    :href="
+                                        route('articles.favorites.store', [
+                                            article.id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="post"
+                                    preserve-scroll
+                                >
+                                    <icon-favorite class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
+                                >
+                                    お気に入り
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <div class="flex">
+                                <Link
+                                    :href="
+                                        route('articles.favorites.destroy', [
+                                            article.id,
+                                            article.favorites[0].id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="delete"
+                                    preserve-scroll
+                                >
+                                    <icon-favorite class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-orange-200 rounded-lg my-auto px-2"
+                                >
+                                    お気に入り済
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex">
+                            <icon-speech-babble class="h-5 w-6" />
+                            <p
+                                class="text-sm bg-blue-200 rounded-lg my-auto px-2"
+                            >
+                                コメント
+                                {{ Object.keys(article.comments).length }}
                             </p>
                         </div>
                     </div>
@@ -80,7 +135,14 @@
         <jet-section-border />
 
         <div class="max-w-7xl mx-auto py-5 sm:px-6 lg:px-8">
-            <jet-form-section @submitted="form.post(route('comment.store'))">
+            <jet-form-section
+                @submitted="
+                    form.post(route('articles.comments.store', [article.id]), {
+                        preserveScroll: true,
+                        onSuccess: () => form.reset(),
+                    })
+                "
+            >
                 <template #title>コメントの作成</template>
                 <template #description>コメントの投稿を行います</template>
 
@@ -109,52 +171,130 @@
 
         <div class="text-2xl text-center">Article - Comments</div>
 
-        <section class="mx-1">
+        <section class="my-5">
             <div
-                v-for="comment in articles.comments"
+                v-for="comment in article.comments"
                 :key="comment.id"
-                class="container mx-auto relative my-8"
+                class="container mx-auto relative my-16 lg:w-2/3"
             >
                 <div
-                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl"
+                    class="flex flex-col bg-white border-2 border-red-200 rounded-3xl shadow-xl px-3 pb-1"
                 >
-                    <div class="bg-blue-100 h-8 rounded-t-3xl"></div>
-
-                    <div>
-                        <p class="px-3">
-                            {{ comment.content }}
-                        </p>
-                    </div>
-
-                    <div class="justify-between px-3 sm:flex">
-                        <div class="flex justify-end sm:justify-items-start">
-                            <icon-base class="w-8 h-8 pt-2" icon-name="check"
-                                ><icon-check
-                            /></icon-base>
-                            <p
-                                class="text-sm bg-green-200 rounded-lg my-auto px-2 mr-10"
-                            >
-                                {{ Object.keys(comment.comment_likes).length }}
+                    <div class="sm:flex justify-between relative">
+                        <div class="flex items-center">
+                            <icon-user class="h-5 w-6" />
+                            <p>
+                                {{ comment.user.name }}
                             </p>
-
-                            <button
-                                class="pt-2 pl-1"
-                                @click="deleteComment(comment.id)"
-                            >
-                                <icon-base class="w-6 h-6" icon-name="garbage"
-                                    ><icon-garbage />
-                                </icon-base>
-                            </button>
                         </div>
-
-                        <div class="flex px-3 sm:justify-end">
-                            <icon-base class="w-6 h-6 pt-1" icon-name="post"
-                                ><icon-post />
-                            </icon-base>
+                        <div class="flex">
+                            <icon-post class="h-5 w-6 my-auto" />
                             <p class="text-gray-400">
                                 {{ comment.updated_at }}
                             </p>
                         </div>
+                    </div>
+
+                    <div v-if="comment.user_id === user">
+                        <Link
+                            class="absolute -top-5 right-0"
+                            as="button"
+                            @click="removeComment(comment.id)"
+                        >
+                            <icon-garbage class="h-5 w-6 mx-auto" />
+                        </Link>
+                    </div>
+
+                    <div>
+                        <p>
+                            {{ comment.content }}
+                        </p>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <div v-if="comment.user_id === user">
+                            <div class="flex">
+                                <Link as="button" disabled>
+                                    <icon-heart class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-orange-200 rounded-lg my-auto px-2"
+                                >
+                                    自分の投稿
+                                    {{
+                                        Object.keys(comment.comment_likes)
+                                            .length
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else-if="checkLike(comment.comment_likes)">
+                            <div class="flex">
+                                <Link
+                                    :href="
+                                        route('articles.likes.store', [
+                                            comment.id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="post"
+                                    preserve-scroll
+                                >
+                                    <icon-heart class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
+                                >
+                                    イイね
+                                    {{
+                                        Object.keys(comment.comment_likes)
+                                            .length
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <div
+                                v-for="comment_like in comment.comment_likes"
+                                :key="comment_like.id"
+                                class="flex"
+                            >
+                                <Link
+                                    :href="
+                                        route('articles.likes.destroy', [
+                                            comment.id,
+                                            comment_like.id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="delete"
+                                    preserve-scroll
+                                >
+                                    <icon-heart class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-orange-200 rounded-lg my-auto px-2"
+                                >
+                                    イイね済
+                                    {{
+                                        Object.keys(comment.comment_likes)
+                                            .length
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- <div class="flex">
+                            <icon-speech-babble class="h-5 w-6" />
+                            <p
+                                class="text-sm bg-blue-200 rounded-lg my-auto px-2"
+                            >
+                                コメント
+                                {{ Object.keys(comment.nest_comments).length }}
+                            </p>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -164,13 +304,13 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import IconBase from "@/svg/IconBase.vue";
-import IconCheck from "@/svg/icons/IconCheck.vue";
 import IconFavorite from "@/svg/icons/IconFavorite.vue";
 import IconGarbage from "@/svg/icons/IconGarbage.vue";
-import IconInformation from "@/svg/icons/IconInformation.vue";
+import IconHandCursor from "@/svg/icons/IconHandCursor.vue";
+import IconHeart from "@/svg/icons/IconHeart.vue";
 import IconPost from "@/svg/icons/IconPost.vue";
 import IconSpeechBabble from "@/svg/icons/IconSpeechBabble.vue";
+import IconUser from "@/svg/icons/IconUser.vue";
 import JetButton from "@/Jetstream/Button.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetInputError from "@/Jetstream/InputError.vue";
@@ -181,18 +321,33 @@ import { Link } from "@inertiajs/inertia-vue3";
 import { useForm } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
-    articles: {},
+    article: {},
+    user: Number,
     errors: {},
 });
 
+const checkFavorite = (favorites) => {
+    return favorites.some((favorite) => {
+        return props.user === favorite.user_id;
+    });
+};
+
+const checkLike = (likes) => {
+    return likes.some((like) => {
+        return props.user === like.user_id;
+    });
+};
+
 const form = useForm({
-    article_id: props.articles.id,
     content: "",
 });
 
-const deleteComment = (id) => {
+const removeComment = (id) => {
     if (window.confirm("削除してもよろしいですか？")) {
-        form.delete(route("comment.destroy", id));
+        form.delete(
+            route("articles.comments.destroy", [props.article.id, id]),
+            { preserveScroll: true }
+        );
     }
 };
 </script>

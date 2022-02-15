@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Article - Edit
                 </h2>
-                <jet-nav-link :href="route('article.show', [articles.id])">
+                <jet-nav-link :href="route('articles.show', [articles.id])">
                     <jet-button> 戻る </jet-button>
                 </jet-nav-link>
             </div>
@@ -13,7 +13,7 @@
 
         <div class="mx-auto py-10 sm:px-6 lg:px-8">
             <jet-form-section
-                @submitted="form.put(route('article.update', [articles.id]))"
+                @submitted="form.put(route('articles.update', [articles.id]))"
             >
                 <template #title>記事の編集</template>
                 <template #description>記事の編集を行います</template>
@@ -62,9 +62,7 @@
                         @click="deleteArticle(articles.id)"
                         class="bg-red-500 hover:bg-red-700"
                         >削除する
-                        <icon-base class="w-5 h-5" icon-name="garbage"
-                            ><icon-garbage />
-                        </icon-base>
+                        <icon-garbage class="h-5 w-4 ml-4" />
                     </jet-button>
                 </template>
             </jet-action-section>
@@ -74,7 +72,6 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import IconBase from "@/svg/IconBase.vue";
 import IconGarbage from "@/svg/icons/IconGarbage.vue";
 import JetActionSection from "@/Jetstream/ActionSection.vue";
 import JetButton from "@/Jetstream/Button.vue";
@@ -99,7 +96,7 @@ const form = useForm({
 
 const deleteArticle = (id) => {
     if (window.confirm("削除してもよろしいですか？")) {
-        form.delete(route("article.destroy", id));
+        form.delete(route("articles.destroy", id));
     }
 };
 </script>

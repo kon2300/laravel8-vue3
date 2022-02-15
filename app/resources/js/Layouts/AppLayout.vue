@@ -31,8 +31,8 @@
                                 </jet-nav-link>
 
                                 <jet-nav-link
-                                    :href="route('article.index')"
-                                    :active="route().current('article.index')"
+                                    :href="route('articles.index')"
+                                    :active="route().current('articles.index')"
                                 >
                                     Article
                                 </jet-nav-link>
@@ -319,6 +319,15 @@
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </jet-responsive-nav-link>
+                    </div>
+
+                    <div class="pt-2 pb-3 space-y-1">
+                        <jet-responsive-nav-link
+                            :href="route('articles.index')"
+                            :active="route().current('articles.index')"
+                        >
+                            Articles
                         </jet-responsive-nav-link>
                     </div>
 

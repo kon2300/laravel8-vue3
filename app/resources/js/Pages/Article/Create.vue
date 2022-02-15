@@ -7,7 +7,7 @@
         </template>
 
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            <jet-form-section @submitted="form.post(route('article.store'))">
+            <jet-form-section @submitted="form.post(route('articles.store'))">
                 <template #title>記事の作成</template>
                 <template #description>記事の投稿を行います</template>
 
