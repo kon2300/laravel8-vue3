@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Article - Show
                 </h2>
-                <div v-if="article.user_id === user">
+                <div v-if="article.user_id === users">
                     <jet-nav-link :href="route('articles.edit', [article.id])">
                         <jet-button> 記事の編集 </jet-button>
                     </jet-nav-link>
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="flex justify-between">
-                        <div v-if="article.user_id === user">
+                        <div v-if="article.user_id === users">
                             <div class="flex">
                                 <Link as="button" disabled>
                                     <icon-favorite class="h-5 w-6" />
@@ -200,7 +200,7 @@
                         </div>
                     </div>
 
-                    <div v-if="comment.user_id === user">
+                    <div v-if="comment.user_id === users">
                         <Link
                             class="absolute -top-5 right-0"
                             as="button"
@@ -217,7 +217,7 @@
                     </div>
 
                     <div class="flex justify-between">
-                        <div v-if="comment.user_id === user">
+                        <div v-if="comment.user_id === users">
                             <div class="flex">
                                 <Link as="button" disabled>
                                     <icon-heart class="h-5 w-6" />
@@ -327,19 +327,19 @@ import { useForm } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
     article: {},
-    user: Number,
+    users: Number,
     errors: {},
 });
 
 const checkFavorite = (favorites) => {
     return favorites.some((favorite) => {
-        return props.user === favorite.user_id;
+        return props.users === favorite.user_id;
     });
 };
 
 const checkLike = (likes) => {
     return likes.some((like) => {
-        return props.user === like.user_id;
+        return props.users === like.user_id;
     });
 };
 

@@ -18,7 +18,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
-        return Inertia::render('Article/Index', ['articles' => $articles, 'user' => Auth::id()]);
+        return Inertia::render('Article/Index', ['articles' => $articles, 'users' => Auth::id()]);
     }
 
     /**
@@ -59,7 +59,7 @@ class ArticleController extends Controller
     public function show($id)
     {
         $article = Article::with('user', 'comments.user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
-        return Inertia::render('Article/Show', ['article' => $article, 'user' => Auth::id()]);
+        return Inertia::render('Article/Show', ['article' => $article, 'users' => Auth::id()]);
     }
 
     /**

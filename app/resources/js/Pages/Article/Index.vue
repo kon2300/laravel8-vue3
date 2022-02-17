@@ -120,12 +120,12 @@ import { Link } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
     articles: {},
-    user: Number,
+    users: Number,
 });
 
 const checkFavorite = (favorites) => {
     return favorites.some((favorite) => {
-        return props.user === favorite.user_id;
+        return props.users === favorite.user_id;
     });
 };
 </script>
