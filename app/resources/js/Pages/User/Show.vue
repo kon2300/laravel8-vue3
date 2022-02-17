@@ -1,9 +1,45 @@
 <template>
-    <app-layout title="Dashboard">
+    <app-layout title="User">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Dashboard
-            </h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    User - {{ users.name }}さんのHOME
+                </h2>
+                <div v-if="checkFollow.length">
+                    <Link
+                        :href="
+                            route('users.follows.destroy', [
+                                users.id,
+                                checkFollow[0].id,
+                            ])
+                        "
+                        as="button"
+                        method="delete"
+                        preserve-scroll
+                        class="flex shadow-sm bg-red-300 py-1 border-2 px-4 rounded-md hover:text-gray-600"
+                    >
+                        <p>UnFollow</p>
+                        <icon-user-check
+                            class="h-3 w-4 my-auto ml-1 fill-current"
+                        />
+                    </Link>
+                </div>
+
+                <div v-else>
+                    <Link
+                        :href="route('users.follows.store', [users.id])"
+                        as="button"
+                        method="post"
+                        preserve-scroll
+                        class="flex shadow-sm bg-blue-300 py-1 border-2 px-4 rounded-md hover:text-gray-600"
+                    >
+                        <p>Follow</p>
+                        <icon-user-plus
+                            class="h-3 w-4 my-auto ml-1 fill-current"
+                        />
+                    </Link>
+                </div>
+            </div>
         </template>
 
         <section class="my-5">
@@ -14,7 +50,7 @@
 
                 <div class="flex justify-center mb-6">
                     <icon-at class="h-full w-10" />
-                    <p class="font-black text-4xl">{{ user.name }}</p>
+                    <p class="font-black text-4xl">{{ users.name }}</p>
                 </div>
 
                 <div class="flex justify-evenly">
@@ -121,18 +157,19 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import IconAt from "@/svg/icons/IconAt.vue";
 import IconUser from "@/svg/icons/IconUser.vue";
+import IconUserCheck from "@/svg/icons/IconUserCheck.vue";
+import IconUserPlus from "@/svg/icons/IconUserPlus.vue";
 import JetDialogModal from "@/Jetstream/DialogModal.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import { Link } from "@inertiajs/inertia-vue3";
 import { ref } from "vue";
 
 const props = defineProps({
-    user: {},
+    users: {},
     followers: {},
     followings: {},
+    checkFollow: {},
 });
-
-console.log(props);
 
 const viewingFollowersList = ref(false);
 

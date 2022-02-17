@@ -6,7 +6,7 @@
                     Article - Edit
                 </h2>
                 <jet-nav-link :href="route('articles.show', [articles.id])">
-                    <jet-button> 戻る </jet-button>
+                    <jet-secondary-button> 戻る </jet-secondary-button>
                 </jet-nav-link>
             </div>
         </template>
@@ -58,12 +58,31 @@
                 <template #description>記事の削除を行います</template>
 
                 <template #content>
-                    <jet-button
-                        @click="deleteArticle(articles.id)"
-                        class="bg-red-500 hover:bg-red-700"
-                        >削除する
-                        <icon-garbage class="h-5 w-4 ml-4" />
-                    </jet-button>
+                    <jet-danger-button @click="confirmArticleDeletion">
+                        Delete Artilcle
+                    </jet-danger-button>
+
+                    <!-- Delete Article Confirmation Modal -->
+                    <jet-dialog-modal
+                        :show="confirmingArticleDeletion"
+                        @close="closeModal"
+                    >
+                        <template #title> Delete Article </template>
+
+                        <template #content> Realy?? </template>
+
+                        <template #footer>
+                            <jet-secondary-button @click="closeModal">
+                                Cancel
+                            </jet-secondary-button>
+
+                            <jet-danger-button
+                                @click="deleteArticle(articles.id)"
+                                class="ml-3"
+                                >削除する
+                            </jet-danger-button>
+                        </template>
+                    </jet-dialog-modal>
                 </template>
             </jet-action-section>
         </div>
@@ -72,17 +91,20 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import IconGarbage from "@/svg/icons/IconGarbage.vue";
 import JetActionSection from "@/Jetstream/ActionSection.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
+import JetDialogModal from "@/Jetstream/DialogModal.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetLabel from "@/Jetstream/Label.vue";
 import JetNavLink from "@/Jetstream/NavLink.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import JetInputError from "@/Jetstream/InputError.vue";
+import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetTextarea from "@/Jetstream/Textarea.vue";
 import { useForm } from "@inertiajs/inertia-vue3";
+import { ref } from "vue";
 
 const props = defineProps({
     articles: {},
@@ -94,9 +116,17 @@ const form = useForm({
     content: props.articles.content,
 });
 
+const confirmingArticleDeletion = ref(false);
+
+const confirmArticleDeletion = () => {
+    confirmingArticleDeletion.value = true;
+};
+
+const closeModal = () => {
+    confirmingArticleDeletion.value = false;
+};
+
 const deleteArticle = (id) => {
-    if (window.confirm("削除してもよろしいですか？")) {
-        form.delete(route("articles.destroy", id));
-    }
+    form.delete(route("articles.destroy", id));
 };
 </script>

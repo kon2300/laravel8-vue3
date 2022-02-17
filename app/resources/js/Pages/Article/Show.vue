@@ -1,9 +1,16 @@
 <template>
     <app-layout title="Article - Show">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Article - Show
-            </h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Article - Show
+                </h2>
+                <div v-if="article.user_id === user">
+                    <jet-nav-link :href="route('articles.edit', [article.id])">
+                        <jet-button> 記事の編集 </jet-button>
+                    </jet-nav-link>
+                </div>
+            </div>
         </template>
 
         <section class="my-5">
@@ -19,24 +26,16 @@
                         </p>
                     </div>
 
-                    <div v-if="article.user_id === user">
-                        <Link
-                            class="absolute -top-8 right-0"
-                            :href="route('articles.edit', [article.id])"
-                        >
-                            <p class="bg-green-400 rounded-2xl p-1 font-bold">
-                                編集
-                            </p>
-                            <icon-hand-cursor class="h-5 w-6 mx-auto" />
-                        </Link>
-                    </div>
-
                     <div class="sm:flex justify-between">
                         <div class="flex items-center">
                             <icon-user class="h-5 w-6" />
-                            <p>
-                                {{ article.user.name }}
-                            </p>
+                            <Link
+                                :href="route('users.show', [article.user_id])"
+                            >
+                                <p>
+                                    {{ article.user.name }}
+                                </p>
+                            </Link>
                         </div>
                         <div class="flex">
                             <icon-post class="h-5 w-6 my-auto" />
@@ -75,29 +74,6 @@
                             <div class="flex">
                                 <Link
                                     :href="
-                                        route('articles.favorites.store', [
-                                            article.id,
-                                        ])
-                                    "
-                                    as="button"
-                                    method="post"
-                                    preserve-scroll
-                                >
-                                    <icon-favorite class="h-5 w-6" />
-                                </Link>
-                                <p
-                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
-                                >
-                                    お気に入り
-                                    {{ Object.keys(article.favorites).length }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div v-else>
-                            <div class="flex">
-                                <Link
-                                    :href="
                                         route('articles.favorites.destroy', [
                                             article.id,
                                             article.favorites[0].id,
@@ -107,12 +83,37 @@
                                     method="delete"
                                     preserve-scroll
                                 >
-                                    <icon-favorite class="h-5 w-6" />
+                                    <icon-favorite
+                                        class="h-4 w-5 fill-yellow-500"
+                                    />
                                 </Link>
                                 <p
                                     class="text-sm bg-orange-200 rounded-lg my-auto px-2"
                                 >
                                     お気に入り済
+                                    {{ Object.keys(article.favorites).length }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <div class="flex">
+                                <Link
+                                    :href="
+                                        route('articles.favorites.store', [
+                                            article.id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="post"
+                                    preserve-scroll
+                                >
+                                    <icon-favorite class="h-4 w-5" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
+                                >
+                                    お気に入り
                                     {{ Object.keys(article.favorites).length }}
                                 </p>
                             </div>
@@ -183,9 +184,13 @@
                     <div class="sm:flex justify-between relative">
                         <div class="flex items-center">
                             <icon-user class="h-5 w-6" />
-                            <p>
-                                {{ comment.user.name }}
-                            </p>
+                            <Link
+                                :href="route('users.show', [comment.user_id])"
+                            >
+                                <p>
+                                    {{ comment.user.name }}
+                                </p>
+                            </Link>
                         </div>
                         <div class="flex">
                             <icon-post class="h-5 w-6 my-auto" />
@@ -230,32 +235,6 @@
                         </div>
 
                         <div v-else-if="checkLike(comment.comment_likes)">
-                            <div class="flex">
-                                <Link
-                                    :href="
-                                        route('articles.likes.store', [
-                                            comment.id,
-                                        ])
-                                    "
-                                    as="button"
-                                    method="post"
-                                    preserve-scroll
-                                >
-                                    <icon-heart class="h-5 w-6" />
-                                </Link>
-                                <p
-                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
-                                >
-                                    イイね
-                                    {{
-                                        Object.keys(comment.comment_likes)
-                                            .length
-                                    }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div v-else>
                             <div
                                 v-for="comment_like in comment.comment_likes"
                                 :key="comment_like.id"
@@ -286,6 +265,32 @@
                             </div>
                         </div>
 
+                        <div v-else>
+                            <div class="flex">
+                                <Link
+                                    :href="
+                                        route('articles.likes.store', [
+                                            comment.id,
+                                        ])
+                                    "
+                                    as="button"
+                                    method="post"
+                                    preserve-scroll
+                                >
+                                    <icon-heart class="h-5 w-6" />
+                                </Link>
+                                <p
+                                    class="text-sm bg-green-200 rounded-lg my-auto px-2"
+                                >
+                                    イイね
+                                    {{
+                                        Object.keys(comment.comment_likes)
+                                            .length
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- <div class="flex">
                             <icon-speech-babble class="h-5 w-6" />
                             <p
@@ -306,7 +311,6 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import IconFavorite from "@/svg/icons/IconFavorite.vue";
 import IconGarbage from "@/svg/icons/IconGarbage.vue";
-import IconHandCursor from "@/svg/icons/IconHandCursor.vue";
 import IconHeart from "@/svg/icons/IconHeart.vue";
 import IconPost from "@/svg/icons/IconPost.vue";
 import IconSpeechBabble from "@/svg/icons/IconSpeechBabble.vue";
@@ -315,6 +319,7 @@ import JetButton from "@/Jetstream/Button.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetInputError from "@/Jetstream/InputError.vue";
 import JetLabel from "@/Jetstream/Label.vue";
+import JetNavLink from "@/Jetstream/NavLink.vue";
 import JetTextarea from "@/Jetstream/Textarea.vue";
 import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import { Link } from "@inertiajs/inertia-vue3";
