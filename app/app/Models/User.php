@@ -60,22 +60,22 @@ class User extends Authenticatable
     ];
 
     /**
-     * The followers that belong to the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function followers()
-    {
-        return $this->belongsToMany(FollowUser::class, 'role_user_table', 'user_id', 'role_id');
-    }
-
-    /**
      * The followings that belong to the User
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function followings()
     {
-        return $this->belongsToMany(FollowUser::class, 'role_user_table', 'user_id', 'role_id');
+        return $this->belongsToMany(User::class, 'follow_users', 'user_id', 'following_user_id');
+    }
+
+    /**
+     * The followers that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follow_users', 'following_user_id', 'user_id');
     }
 }

@@ -68,7 +68,9 @@
                     <div class="flex justify-between">
                         <div v-if="checkFavorite(article.favorites)">
                             <div class="flex">
-                                <icon-favorite class="h-5 w-6" />
+                                <icon-favorite
+                                    class="h-4 w-5 fill-yellow-500"
+                                />
                                 <p
                                     class="text-sm bg-orange-200 rounded-lg my-auto px-2"
                                 >
@@ -80,7 +82,7 @@
 
                         <div v-else>
                             <div class="flex">
-                                <icon-favorite class="h-5 w-6" />
+                                <icon-favorite class="h-4 w-5" />
                                 <p
                                     class="text-sm bg-green-200 rounded-lg my-auto px-2"
                                 >
@@ -91,7 +93,7 @@
                         </div>
 
                         <div class="flex">
-                            <icon-speech-babble class="h-5 w-6" />
+                            <icon-speech-babble class="h-5 w-5 mr-1" />
                             <p
                                 class="text-sm bg-blue-200 rounded-lg my-auto px-2"
                             >
