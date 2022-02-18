@@ -1,5 +1,9 @@
 <template>
     <app-layout title="Article - Show">
+        <jet-action-message :on="form.recentlySuccessful">
+            コメントを投稿しました
+        </jet-action-message>
+
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -149,7 +153,7 @@
 
                 <template #form>
                     <div class="col-span-6 sm:col-span-4">
-                        <jet-label for="content" value="コンテンツ" />
+                        <jet-label for="content" value="コメントの内容" />
                         <jet-textarea
                             id="content"
                             class="mt-1 block w-full"
@@ -163,16 +167,23 @@
                 </template>
 
                 <template #actions>
-                    <jet-button class="bg-blue-700"> 作成 </jet-button>
+                    <jet-button class="bg-blue-700" :disabled="form.processing">
+                        作成
+                    </jet-button>
                 </template>
             </jet-form-section>
         </div>
 
         <jet-section-border />
 
-        <div class="text-2xl text-center">Article - Comments</div>
-
-        <section class="my-5">
+        <div class="my-5 text-2xl text-center">Article - Comments</div>
+        <div
+            v-if="!article.comments.length"
+            class="flex justify-center text-xl text-gray-400 py-5"
+        >
+            投稿はまだありません
+        </div>
+        <section>
             <div
                 v-for="comment in article.comments"
                 :key="comment.id"
@@ -290,16 +301,6 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- <div class="flex">
-                            <icon-speech-babble class="h-5 w-6" />
-                            <p
-                                class="text-sm bg-blue-200 rounded-lg my-auto px-2"
-                            >
-                                コメント
-                                {{ Object.keys(comment.nest_comments).length }}
-                            </p>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -315,6 +316,7 @@ import IconHeart from "@/svg/icons/IconHeart.vue";
 import IconPost from "@/svg/icons/IconPost.vue";
 import IconSpeechBabble from "@/svg/icons/IconSpeechBabble.vue";
 import IconUser from "@/svg/icons/IconUser.vue";
+import JetActionMessage from "@/Jetstream/ActionMessage.vue";
 import JetButton from "@/Jetstream/Button.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetInputError from "@/Jetstream/InputError.vue";

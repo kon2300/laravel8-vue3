@@ -472,6 +472,7 @@
                 <slot></slot>
             </main>
         </div>
+        <footer class="h-24 bg-gray-600 shadow-lg"></footer>
     </div>
 </template>
 
