@@ -2,30 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
+use App\Repositories\Comment\CommentRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(CommentRepositoryInterface $comment_repository)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $this->comment_repository = $comment_repository;
     }
 
     /**
@@ -37,50 +22,7 @@ class CommentController extends Controller
      */
     public function store($article, Request $request)
     {
-        $request->validate([
-            'content' => ['required']
-        ]);
-
-        $input = $request->all();
-        $input['user_id'] = Auth::id();
-        $input['article_id'] = $article;
-        Comment::create($input);
-
-        return back();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return $this->comment_repository->store($article, $request);
     }
 
     /**
@@ -89,10 +31,8 @@ class CommentController extends Controller
      * @param  int  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy($article, Comment $comment)
+    public function destroy($article, $comment)
     {
-        $comment->delete();
-
-        return back();
+        return $this->comment_repository->destroy($article, $comment);
     }
 }

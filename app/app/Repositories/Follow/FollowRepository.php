@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories\Follow;
 
+use App\Models\FollowUser;
 use App\Repositories\Follow\FollowRepositoryInterface;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class FollowController extends Controller
+class FollowRepository implements FollowRepositoryInterface
 {
-    public function __construct(FollowRepositoryInterface $follow_repository)
-    {
-        $this->follow_repository = $follow_repository;
-    }
     /**
      * Store a newly created resource in storage.
      *
@@ -18,9 +15,14 @@ class FollowController extends Controller
      * @param $user
      * @return \Illuminate\Http\Response
      */
-    public function store($user, Request $request)
+    public function store($user, $request)
     {
-        return $this->follow_repository->store($user, $request);
+        $input = $request->all();
+        $input['user_id'] = Auth::id();
+        $input['following_user_id'] = $user;
+        FollowUser::create($input);
+
+        return back();
     }
 
     /**
@@ -31,6 +33,8 @@ class FollowController extends Controller
      */
     public function destroy($user, $follow)
     {
-        return $this->follow_repository->destroy($user, $follow);
+        FollowUser::find($follow)->delete();
+
+        return back();
     }
 }
