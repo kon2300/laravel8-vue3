@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+use App\Repositories\Article\ArticleRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
 
 class ArticleController extends Controller
 {
+    public function __construct(ArticleRepositoryInterface $article_repository)
+    {
+        $this->article_repository = $article_repository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +19,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::with('user', 'comments.commentLikes', 'favorites', 'Tags')->get();
-        return Inertia::render('Article/Index', ['articles' => $articles, 'users' => Auth::id()]);
+        return $this->article_repository->index();
     }
 
     /**
@@ -28,7 +29,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Article/Create');
+        return $this->article_repository->create();
     }
 
     /**
@@ -39,71 +40,51 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => ['required'],
-            'content' => ['required']
-        ]);
-
-        $input = $request->all();
-        $input['user_id'] = Auth::id();
-        Article::create($input);
-        return Redirect::route('articles.index');
+        return $this->article_repository->store($request);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $article
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($article)
     {
-        $article = Article::with('user', 'comments.user', 'comments.commentLikes', 'favorites', 'Tags')->where('id', $id)->first();
-        return Inertia::render('Article/Show', ['article' => $article, 'users' => Auth::id()]);
+        return $this->article_repository->show($article);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $article
      * @return \Illuminate\Http\Response
      */
-    public function edit(Article $article)
+    public function edit($article)
     {
-        return Inertia::render('Article/Edit', ['articles' => $article]);
+        return $this->article_repository->edit($article);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $article)
     {
-        $request->validate([
-            'title' => ['required'],
-            'content' => ['required']
-        ]);
-
-        $input = $request->all();
-
-        $article->update($input);
-
-        $id = $article->id;
-        return Redirect::route('articles.show', $id);
+        return $this->article_repository->update($request, $article);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article)
+    public function destroy($id)
     {
-        $article->delete();
-        return Redirect::route('articles.index');
+        return $this->article_repository->destroy($id);
     }
 }

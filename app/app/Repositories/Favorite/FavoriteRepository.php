@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories\Favorite;
 
+use App\Models\Favorite;
 use App\Repositories\Favorite\FavoriteRepositoryInterface;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class FavoriteController extends Controller
+class FavoriteRepository implements FavoriteRepositoryInterface
 {
-    public function __construct(FavoriteRepositoryInterface $favorite_repository)
-    {
-        $this->favorite_repository = $favorite_repository;
-    }
-
-     /**
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param int $article
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $article)
+    public function store($request, $article)
     {
-        return $this->favorite_repository->store($request, $article);
+        $input = $request->all();
+        $input['user_id'] = Auth::id();
+        $input['article_id'] = $article;
+        Favorite::create($input);
+
+        return back();
     }
 
     /**
@@ -32,6 +33,8 @@ class FavoriteController extends Controller
      */
     public function destroy($article, $favorite)
     {
-       return $this->favorite_repository->destroy($article, $favorite);
+        Favorite::find($favorite)->delete();
+
+        return back();
     }
 }
